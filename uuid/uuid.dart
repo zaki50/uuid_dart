@@ -164,7 +164,7 @@ class UUID_v0 implements UUID {
     return hexOctets(6);
   }
 }
-
+/*
 void main() {
   for (int i=0 ; i<10; i++) {
     print(Math.random());
@@ -178,3 +178,4 @@ void main() {
   UUID uuid0 = new UUID();
   print(uuid0.generate());
 }
+*/

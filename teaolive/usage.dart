@@ -3,7 +3,7 @@
 #import('./teaolive.dart');
 #import('./teaolive_html_reporter.dart');
 
-void main(){
+void _usage_main(){
 
   describe("Tea olive", (){
     
