@@ -28,6 +28,11 @@ void main(){
       expect(uuidPattern.hasMatch(uuid.generate())).toBe(true);
     });
 
+    it("v4-mt suits UUID syntax", () {
+      UUID uuid = new UUID_v4mt();
+      expect(uuidPattern.hasMatch(uuid.generate())).toBe(true);
+    });
+
     it("suits UUID syntax", () {
       UUID uuid = new UUID();
       expect(uuidPattern.hasMatch(uuid.generate())).toBe(true);
