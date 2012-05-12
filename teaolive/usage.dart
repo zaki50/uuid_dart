@@ -40,6 +40,6 @@ void _usage_main(){
   });
    */
   
-  setTeaoliveReporter(new TeaoliceHtmlReporter());
+  setTeaoliveReporter(new TeaoliveHtmlReporter());
   teaoliveRun();
 }

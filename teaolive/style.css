@@ -1,12 +1,11 @@
 @charset "utf-8";
 
 .teaolieve-describe {
-    font-size: 2em;
+    margin-bottom: 1em;
 }
 
 .teaolieve-it {
     margin-left: 3em;
-    font-size: 1em;
 }
 
 .teaolive-success {

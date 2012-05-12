@@ -4,7 +4,7 @@
 
 #import('./teaolive.dart');
 
-class TeaoliceHtmlReporter implements TeaoliveReporter {
+class TeaoliveHtmlReporter implements TeaoliveReporter {
   
   Element result;
   
