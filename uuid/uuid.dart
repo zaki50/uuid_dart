@@ -1,3 +1,19 @@
+/**
+This program is written by Hiroshi Koyama<hiro345@gmail.com>
+
+This code is an simple translate to Dart.
+Original Code is https://github.com/LiosK/UUID.js/blob/master/src/uuid.js
+
+↓ is the original copyright notice.
+
+* UUID.js: The RFC-compliant UUID generator for JavaScript.
+*
+* @fileOverview
+* @author LiosK
+* @version 3.2
+* @license The MIT License: Copyright (c) 2010-2012 LiosK.
+*/
+
 #library('uuid');
 #import('../MersenneTwister/MersenneTwister.dart');
 
