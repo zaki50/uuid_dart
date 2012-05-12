@@ -22,6 +22,97 @@ interface UUID  default UUID_v4 {
   String generate();
 }
 
+class UUID_v4mt implements UUID {
+  Random random;
+  UUID_v4mt() {
+    random = new Random(new Date.now().value);    
+  }
+  String generate() {
+    return hex(rand(32), 8) // time_low
+    + "-"
+    + hex(rand(16), 4) // time_mid
+    + "-"
+    + hex(0x4000 | rand(12), 4) // time_hi_and_version
+    + "-"
+    + hex(0x8000 | rand(14), 4) // clock_seq_hi_and_reserved + clock_seq_low
+    + "-"
+    + hex(rand(48), 12); // node
+  }  
+  int rand(var x) {
+    return random.nextBits(x);
+  }
+}
+class UUID_v1mt implements UUID {
+  Random random;
+  UUID_v1mt() {
+    random = new Random(new Date.now().value);
+    sequence = rand(14);
+    // set multicast bit '1'
+    node = (rand(8) | 1) * 0x10000000000 + rand(40);
+    tick = rand(4);
+    _state = new State();
+    _timeZone = new TimeZone.utc();
+    _baseDate = new Date.withTimeZone(1970, Date.JAN, 1, 0, 0, 0, 0, _timeZone);
+  }  
+  int rand(var x) {
+    return random.nextBits(x);
+  }
+  int timestamp = 0;
+  var sequence;
+  var node;
+  var tick;
+  var _tsRatio = 1 / 4;
+  var _state;
+  var _timeZone;
+  var _baseDate;
+  String generate() {
+      int now = new Date.now().value;
+      if (now != timestamp) {
+        if (now < timestamp) {
+          sequence++;
+        }
+        timestamp = now;
+        tick = rand(4);
+      } else if (Math.random() < _tsRatio && tick < 9984) {
+        tick += 1 + rand(4);
+      } else {
+        sequence++;
+      }
+      // format time fields
+      getTimeFieldValues(timestamp);
+      var tl = low + tick;
+      var thav = (hi & 0xFFF) | 0x1000; // set version '0001'
+
+      // format clock sequence
+      sequence &= 0x3FFF;
+      var cshar = (sequence >> 8) | 0x80; // set variant '10'
+      var csl = sequence & 0xFF;
+
+      return hex(tl, 8) // time_low
+        + "-"
+        + hex(mid, 4) // time_mid
+        + "-"
+        + hex(thav, 4) // time_hi_and_version
+        + "-"
+        + hex(cshar, 2)
+        + hex(csl, 2) // clock_seq_hi_and_reserved + clock_seq_low
+        + "-"
+        + hex(_state.node, 12); // node    
+    }
+    int ts1582_10_15 = 12219292800; //141427;
+    void getTimeFieldValues(int time) {
+      int ts = time - _baseDate.value + ts1582_10_15;
+      var hm = ((ts / 0x100000000) * 10000).toInt() & 0xFFFFFFF;
+      low = ((ts & 0xFFFFFFF) * 10000) % 0x100000000;
+      mid = hm & 0xFFFF;
+      hi = hm >> 16;
+      _state.timestamp = ts;
+    }
+    var low;
+    var mid;
+    var hi;
+}
+
 String hex(int num, int length) {
   String str = num.toRadixString(16);
   String z = "0";
@@ -180,6 +271,7 @@ class UUID_v0 implements UUID {
     return hexOctets(6);
   }
 }
+
 /*
 void main() {
   for (int i=0 ; i<10; i++) {
@@ -193,5 +285,13 @@ void main() {
   print(uuid1.generate());
   UUID uuid0 = new UUID();
   print(uuid0.generate());
+  UUID uuid4mt = new UUID_v4mt();
+  for (int i=0 ; i<50; i++) {
+    print(uuid4.generate());
+  }
+  print("-----------------------------");
+  for (int i=0 ; i<50; i++) {
+    print(uuid4mt.generate());
+  }
 }
 */
