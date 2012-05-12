@@ -1,13 +1,18 @@
 #library('teaolive_html_reporter');
 
+#import('dart:html');
+
 #import('./teaolive.dart');
 
 class TeaoliceHtmlReporter implements TeaoliveReporter {
   
+  Element result;
+  
   TeaoliveReporter(){}
   
   void onRunnerStart(){
-    print("test is started...");
+    result = document.query("#result");
+    result.innerHTML = "test is started...";
   }
   
   void onSuiteResult(TeaoliveSuite suite){}
@@ -15,25 +20,55 @@ class TeaoliceHtmlReporter implements TeaoliveReporter {
   void onSpecResult(TeaoliveSpec spec){}
 
   void onRunnerResult(TeaoliveRunner runner){
+    result.nodes.clear();
+    
     for(TeaoliveSuite suite in runner.suites){
-      if(suite.result){
-        print("describe ${suite.description} is success!");
-      } else {
-        print("describe ${suite.description} is failure...");
-        
-        for(TeaoliveSpec spec in suite.specs){
-          if(spec.result){
-            print("  it ${spec.description} is success!");
-          } else {
-            print("  it ${spec.description} is failure...");
-            if(spec.errorMessage != null){
-              print("    ${spec.errorMessage}");
-            } else {
-              print("    unknown error ${spec.error}");
-            }
-          }
-        }
+      addSuite2dom(result, suite);
+    }
+  }
+  
+  void addSuite2dom(final Element parent, final TeaoliveSuite suite){
+    
+    final Element el = new Element.tag("div");
+    el.classes.add("teaolieve-describe");
+
+    if(suite.result){
+      el.classes.add("teaolive-success");
+      el.innerHTML = "describe ${suite.description} is success!";
+
+    } else {
+      el.classes.add("teaolive-failure");
+      el.innerHTML = "describe ${suite.description} is failure...";
+      
+      result.nodes.add(el);
+
+      for(TeaoliveSpec spec in suite.specs){
+        addSpec2dom(el, spec);
       }
     }
+    parent.nodes.add(el);
+  }
+  
+  void addSpec2dom(Element parent, TeaoliveSpec spec){
+    
+    final Element el = new Element.tag("div");
+    el.classes.add("teaolieve-it");
+
+    if(spec.result){
+      el.classes.add("teaolive-success");
+      el.innerHTML = "it ${spec.description} is success!";
+
+    } else {
+
+      el.classes.add("teaolive-failure");
+      el.innerHTML = "it ${spec.description} is failure...";
+
+      if(spec.errorMessage != null){
+        el.innerHTML += " ${spec.errorMessage}";
+      } else {
+        el.innerHTML += " unknown error ${spec.error}";
+      }
+    }
+    parent.nodes.add(el);
   }
 }
